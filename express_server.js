@@ -21,8 +21,6 @@ function generateRandomString() {
   return output;
 }
 
-console.log(generateRandomString());
-
 app.set("view engine", "ejs"); // tells app to use EJS as template engine
 
 const urlDatabase = {
@@ -60,7 +58,7 @@ app.post("/urls", (req, res) => {
   // console.log(req.body);  // {longURL: URL}
   let shortURL = generateRandomString();
   urlDatabase[shortURL] = req.body.longURL;
-  res.send(urlDatabase);         // Respond with 'Ok' (we will replace this)
+  res.redirect(`/urls/${shortURL}`);
 });
 
 app.get("/urls/:shortURL", (req, res) => {
