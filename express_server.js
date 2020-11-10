@@ -1,34 +1,30 @@
 const express = require("express");
 const app = express();
-const PORT = 8080; // default port 8080
+app.set("view engine", "ejs"); 
+const PORT = 8080;
 
+// Generate random string for shortURL
 function generateRandomString() {
-  // 48-57 nums
-  // 65-90
-  // 97-122
   let output = "";
-  // 62 alphanumeric characters in total
   for (i = 0; i < 6; i++) {
-    let randomNum = Math.floor((Math.random() * 61) + 0);
-    if (randomNum <= 9) {
+    let randomNum = Math.floor((Math.random() * 61) + 0); // 62 alphanumeric characters in total
+    if (randomNum <= 9) { // numbers
       output += randomNum;
-    } else if (randomNum > 9 && randomNum <= 35) {
+    } else if (randomNum > 9 && randomNum <= 35) { // calculate ASCII uppercase letters
       output += String.fromCharCode(randomNum - 10 + 65);
-    } else if (randomNum > 35) {
+    } else if (randomNum > 35) { // calculate ASCII lowercase letters
       output += String.fromCharCode(randomNum - 10 - 26 + 97);
     }
   }
   return output;
 }
 
-app.set("view engine", "ejs"); // tells app to use EJS as template engine
-
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
 
-// organize routes from most specific to least
+// ROUTES ----------------------------------------------------------
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
@@ -46,7 +42,7 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 })
 
-// submit new URL to database
+// Submit new URL to database
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -70,7 +66,7 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(longURL);
 });
 
-
+// Start server
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
