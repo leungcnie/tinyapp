@@ -2,6 +2,27 @@ const express = require("express");
 const app = express();
 const PORT = 8080; // default port 8080
 
+function generateRandomString() {
+  // 48-57 nums
+  // 65-90
+  // 97-122
+  let output = "";
+  // 62 alphanumeric characters in total
+  for (i = 0; i < 6; i++) {
+    let randomNum = Math.floor((Math.random() * 61) + 0);
+    if (randomNum <= 9) {
+      output += randomNum;
+    } else if (randomNum > 9 && randomNum <= 35) {
+      output += String.fromCharCode(randomNum - 10 + 65);
+    } else if (randomNum > 35) {
+      output += String.fromCharCode(randomNum - 10 - 26 + 97);
+    }
+  }
+  return output;
+}
+
+console.log(generateRandomString());
+
 app.set("view engine", "ejs"); // tells app to use EJS as template engine
 
 const urlDatabase = {
@@ -27,12 +48,21 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 })
 
+// submit new URL
+const bodyParser = require("body-parser");
+app.use(bodyParser.urlencoded({ extended: true }));
+
 app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 })
 
+app.post("/urls", (req, res) => {
+  console.log(req.body);  // Log the POST request body to the console
+  res.send("Ok");         // Respond with 'Ok' (we will replace this)
+});
+
 app.get("/urls/:shortURL", (req, res) => {
-  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL]};
+  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
   res.render("urls_show", templateVars);
 });
 
