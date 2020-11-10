@@ -12,18 +12,6 @@ const urlDatabase = {
 
 // ROUTES ----------------------------------------------------------
 
-app.get("/", (req, res) => {
-  res.send("Hello!");
-});
-
-app.get("/urls.json", (req, res) => {
-  res.json(urlDatabase);
-});
-
-app.get("/hello", (req, res) => {
-  res.send("<html><body>Hello <b>World</b></body></html>\n");
-});
-
 app.get("/urls", (req, res) => {
   const templateVars = { urls: urlDatabase };
   res.render("urls_index", templateVars);
@@ -37,22 +25,28 @@ app.get("/urls/new", (req, res) => {
 app.post("/urls", (req, res) => {
   let shortURL = generateRandomString();
   urlDatabase[shortURL] = req.body.longURL;
+  console.log(`New TinyURL ${shortURL} created for ${req.body.longURL}`);
   res.redirect(`/urls/${shortURL}`);
 });
 
+// Displays urls_show page
 app.get("/urls/:shortURL", (req, res) => {
-  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
+  const shortURL = req.params.shortURL;
+  const templateVars = { shortURL: shortURL, longURL: urlDatabase[shortURL] };
   res.render("urls_show", templateVars);
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL];
+  const shortURL = req.params.shortURL;
+  const longURL = urlDatabase[shortURL];
   res.redirect(longURL);
 });
 
 // Remove URL resource
 app.post("/urls/:shortURL/delete", (req, res) => {
-  delete urlDatabase[req.params.shortURL];
+  const shortURL = req.params.shortURL;
+  console.log(`${urlDatabase[shortURL]} deleted`);
+  delete urlDatabase[shortURL];
   res.redirect("/urls");
 })
 
@@ -67,6 +61,7 @@ app.post("/urls/:shortURL", (req, res) => {
   // console.log(req.params); // {shortURL: b2xVn2}
   const shortURL = req.params.shortURL;
   const newLongURL = req.body.longURL; // req.body => {longURL: URL}
+  console.log(`${urlDatabase[shortURL]} updated to ${newLongURL}`);
   urlDatabase[shortURL] = newLongURL;
   res.redirect("/urls");
 })
