@@ -1,23 +1,9 @@
 const express = require("express");
 const app = express();
-app.set("view engine", "ejs"); 
 const PORT = 8080;
-
-// Generate random string for shortURL
-function generateRandomString() {
-  let output = "";
-  for (i = 0; i < 6; i++) {
-    let randomNum = Math.floor((Math.random() * 61) + 0); // 62 alphanumeric characters in total
-    if (randomNum <= 9) { // numbers
-      output += randomNum;
-    } else if (randomNum > 9 && randomNum <= 35) { // calculate ASCII uppercase letters
-      output += String.fromCharCode(randomNum - 10 + 65);
-    } else if (randomNum > 35) { // calculate ASCII lowercase letters
-      output += String.fromCharCode(randomNum - 10 - 26 + 97);
-    }
-  }
-  return output;
-}
+app.set("view engine", "ejs"); 
+const bodyParser = require("body-parser");
+app.use(bodyParser.urlencoded({ extended: true }));
 
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
@@ -25,6 +11,7 @@ const urlDatabase = {
 };
 
 // ROUTES ----------------------------------------------------------
+
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
@@ -43,9 +30,6 @@ app.get("/urls", (req, res) => {
 })
 
 // Submit new URL to database
-const bodyParser = require("body-parser");
-app.use(bodyParser.urlencoded({ extended: true }));
-
 app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 })
@@ -72,7 +56,38 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   res.redirect("/urls");
 })
 
+// Redirect to urls_show when Edit button pressed
+app.post("/urls/:shortURL/edit", (req, res) => {
+  const shortURL = req.params.shortURL;
+  res.redirect(`/urls/${shortURL}`);
+})
+
+// Edit URL resource: update with new longURL
+app.post("/urls/:shortURL", (req, res) => {
+  // console.log(req.params); // {shortURL: b2xVn2}
+  const shortURL = req.params.shortURL;
+  const newLongURL = req.body.longURL; // req.body => {longURL: URL}
+  urlDatabase[shortURL] = newLongURL;
+  res.redirect("/urls");
+})
+
 // Start server
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
+
+// Generate random string for shortURL
+function generateRandomString() {
+  let output = "";
+  for (i = 0; i < 6; i++) {
+    let randomNum = Math.floor((Math.random() * 61) + 0); // 62 alphanumeric characters in total
+    if (randomNum <= 9) { // numbers
+      output += randomNum;
+    } else if (randomNum > 9 && randomNum <= 35) { // calculate ASCII uppercase letters
+      output += String.fromCharCode(randomNum - 10 + 65);
+    } else if (randomNum > 35) { // calculate ASCII lowercase letters
+      output += String.fromCharCode(randomNum - 10 - 26 + 97);
+    }
+  }
+  return output;
+}
