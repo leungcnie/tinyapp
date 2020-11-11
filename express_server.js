@@ -77,8 +77,20 @@ app.post("/urls/:shortURL", (req, res) => {
 
 // POST /login
 app.post('/login', (req, res) => {
-  const username = req.body.username;
-  res.cookie("user_id", username);
+  const email = req.body.email;
+  const password = req.body.password;
+  const userKey = lookupEmail(email) || false;
+
+  if (!userKey) {
+    return res.status(403).send("Account not found");
+  }
+  
+  console.log("lookup email value:", lookupEmail(email));
+  if (users[userKey].password !== password) {
+    return res.status(403).send("Password incorrect")
+  }
+  
+  res.cookie("user_id", userKey);
   res.redirect("/urls");
 })
 
