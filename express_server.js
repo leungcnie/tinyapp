@@ -90,9 +90,10 @@ app.post('/logout', (req, res) => {
 
 // GET /register
 app.get("/register", (req, res) => {
-  const user = req.cookies["user_id"];
+  const userId = req.cookies["user_id"];
+  const user = users[userId];
   const templateVars = { user };
-  res.render("urls_register", templateVars);
+  res.render("register", templateVars);
 })
 
 // POST /register
@@ -113,6 +114,14 @@ app.post("/register", (req, res) => {
   res.cookie("user_id", id);
   console.log("USERS", users);
   res.redirect("/urls");
+})
+
+// GET /login
+app.get("/login", (req, res) => {
+  const userId = req.cookies["user_id"];
+  const user = users[userId];
+  const templateVars = { user };
+  res.render("login", templateVars);
 })
 
 // Start server
