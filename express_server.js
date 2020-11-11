@@ -28,16 +28,20 @@ const users = {
 // ROUTES ----------------------------------------------------------
 
 app.get("/urls", (req, res) => {
+  const userId = req.cookies["user_id"];
+  const user = users[userId];
   const templateVars = {
     urls: urlDatabase,
-    username: req.cookies["username"],
+    user,
   };
   res.render("urls_index", templateVars);
 })
 
 // Submit new URL to database
 app.get("/urls/new", (req, res) => {
-  const templateVars = { username: req.cookies["username"] };
+  const userId = req.cookies["user_id"];
+  const user = users[userId];
+  const templateVars = { user };
   res.render("urls_new", templateVars);
 })
 
@@ -51,11 +55,10 @@ app.post("/urls", (req, res) => {
 // Displays urls_show page
 app.get("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
-  const templateVars = { 
-    shortURL: shortURL, 
-    longURL: urlDatabase[shortURL],
-    username: req.cookies["username"],
-  };
+  const longURL = urlDatabase[shortURL];
+  const userId = req.cookies["user_id"];
+  const user = users[userId];
+  const templateVars = { shortURL, longURL, user };
   res.render("urls_show", templateVars);
 });
 
@@ -81,7 +84,6 @@ app.post("/urls/:shortURL/edit", (req, res) => {
 
 // Edit URL resource: update with new longURL
 app.post("/urls/:shortURL", (req, res) => {
-  // console.log(req.params); // {shortURL: b2xVn2}
   const shortURL = req.params.shortURL;
   const newLongURL = req.body.longURL; // req.body => {longURL: URL}
   console.log(`${urlDatabase[shortURL]} updated to ${newLongURL}`);
@@ -92,19 +94,20 @@ app.post("/urls/:shortURL", (req, res) => {
 // POST /login
 app.post('/login', (req, res) => {
   const username = req.body.username;
-  res.cookie("username", username);
+  res.cookie("user_id", username);
   res.redirect("/urls");
 })
 
 // POST /logout
 app.post('/logout', (req, res) => {
-  res.clearCookie("username");
+  res.clearCookie("user_id");
   res.redirect("/urls");
 })
 
 // GET /register
 app.get("/register", (req, res) => {
-  const templateVars = { username: req.cookies["username"] };
+  const user = req.cookies["user_id"];
+  const templateVars = { user };
   res.render("urls_register", templateVars);
 })
 
@@ -115,6 +118,7 @@ app.post("/register", (req, res) => {
   const password = req.body.password;
   users[id] = { id, email, password };
   res.cookie("user_id", id);
+  console.log("USERS", users);
   res.redirect("/urls");
 })
 
