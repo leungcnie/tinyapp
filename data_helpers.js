@@ -37,9 +37,9 @@ function generateRandomString() {
 
 // Lookup e-mail in users object
 function lookupEmail(email) {
-  for (const user of Object.keys(users)) {
-    if (users[user].email === email) {
-      return true;
+  for (const userKey of Object.keys(users)) {
+    if (users[userKey].email === email) {
+      return userKey;
     }
   }
   return false;
