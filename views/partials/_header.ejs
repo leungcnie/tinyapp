@@ -18,9 +18,9 @@
         </a>
         <% } else { %>
         <a class="nav-item">
-          <form method="POST" action="/login">
-            <input type="text" name="username" />
-            <input type="submit" value="Login" />
+          <form method="POST" action="/login" class="form-inline">
+            <div class="form-group"><input type="text" name="username" class="form-control" placeholder="Username" /></div>
+            <input type="submit" value="Login" class="btn btn-outline-dark ml-2" />
           </form>
         </a>
         <% } %>
