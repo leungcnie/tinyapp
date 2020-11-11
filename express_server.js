@@ -38,7 +38,7 @@ app.get("/urls", (req, res) => {
 // Submit new URL to database
 app.get("/urls/new", (req, res) => {
   const templateVars = { username: req.cookies["username"] };
-  res.render("urls_new");
+  res.render("urls_new", templateVars);
 })
 
 app.post("/urls", (req, res) => {
@@ -87,6 +87,12 @@ app.post("/urls/:shortURL", (req, res) => {
   console.log(`${urlDatabase[shortURL]} updated to ${newLongURL}`);
   urlDatabase[shortURL] = newLongURL;
   res.redirect("/urls");
+})
+
+// GET /register
+app.get("/register", (req, res) => {
+  const templateVars = { username: req.cookies["username"] };
+  res.render("urls_register", templateVars);
 })
 
 // Start server
