@@ -99,12 +99,12 @@ function generateRandomString() {
   let output = "";
   for (i = 0; i < 6; i++) {
     let randomNum = Math.floor((Math.random() * 61) + 0); // 62 alphanumeric characters in total
-    if (randomNum <= 9) { // numbers
+    if (randomNum <= 9) { // directly map numbers
       output += randomNum;
     } else if (randomNum > 9 && randomNum <= 35) { // calculate ASCII uppercase letters
       output += String.fromCharCode(randomNum - 10 + 65);
     } else if (randomNum > 35) { // calculate ASCII lowercase letters
-      output += String.fromCharCode(randomNum - 10 - 26 + 97);
+      output += String.fromCharCode(randomNum - 36 + 97);
     }
   }
   return output;
