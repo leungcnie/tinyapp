@@ -81,6 +81,10 @@ app.post('/login', (req, res) => {
   const password = req.body.password;
   const userKey = lookupEmail(email) || false;
 
+  if (!email || !password) {
+    return res.status(400).send("Cannot have empty email and password fields")
+  }
+
   if (!userKey) {
     return res.status(403).send("Account not found");
   }
