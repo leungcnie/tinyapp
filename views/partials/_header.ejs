@@ -17,12 +17,14 @@
           </form>
         </a>
         <% } else { %>
-        <a class="nav-item">
-          <form method="POST" action="/login" class="form-inline">
+        <!-- <a class="nav-item"> -->
+          <!-- <form method="POST" action="/login" class="form-inline">
             <input type="text" name="username" class="form-control" placeholder="Username" />
             <input type="submit" value="Login" class="btn btn-outline-dark ml-2" />
-          </form>
-        </a>
+          </form> -->
+          <a class="nav-item nav-link" href="/login">Login</a>
+          <a class="nav-item nav-link" href="/register">Register</a>
+        <!-- </a> -->
         <% } %>
       </div>
     </div>
