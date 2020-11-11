@@ -12,6 +12,13 @@ const urlDatabase = {
 
 // ROUTES ----------------------------------------------------------
 
+app.post('/login', (req, res) => {
+  const username = req.body.username;
+  console.log(username);
+  res.cookie("username", username);
+  res.redirect("/urls");
+})
+
 app.get("/urls", (req, res) => {
   const templateVars = { urls: urlDatabase };
   res.render("urls_index", templateVars);
