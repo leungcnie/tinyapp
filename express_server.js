@@ -116,6 +116,15 @@ app.post("/register", (req, res) => {
   const id = generateRandomString();
   const email = req.body.email;
   const password = req.body.password;
+
+  if (!email || !password) {
+    return res.status(400).send("Cannot have empty email and password fields")
+  }
+
+  if (lookupEmail(email)) {
+    return res.status(400).send("Email already registered")
+  }
+
   users[id] = { id, email, password };
   res.cookie("user_id", id);
   console.log("USERS", users);
@@ -141,4 +150,14 @@ function generateRandomString() {
     }
   }
   return output;
+}
+
+// Lookup e-mail in users object
+function lookupEmail(email) {
+  for (const user of Object.keys(users)) {
+    if (users[user].email === email) {
+      return true;
+    }
+  }
+  return false;
 }
