@@ -12,20 +12,20 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+const users = { 
+  "userRandomID": {
+    id: "userRandomID", 
+    email: "user@example.com", 
+    password: "purple-monkey-dinosaur"
+  },
+ "user2RandomID": {
+    id: "user2RandomID", 
+    email: "user2@example.com", 
+    password: "dishwasher-funk"
+  }
+}
+
 // ROUTES ----------------------------------------------------------
-
-// POST /login
-app.post('/login', (req, res) => {
-  const username = req.body.username;
-  res.cookie("username", username);
-  res.redirect("/urls");
-})
-
-// POST /logout
-app.post('/logout', (req, res) => {
-  res.clearCookie("username");
-  res.redirect("/urls");
-})
 
 app.get("/urls", (req, res) => {
   const templateVars = {
@@ -89,10 +89,33 @@ app.post("/urls/:shortURL", (req, res) => {
   res.redirect("/urls");
 })
 
+// POST /login
+app.post('/login', (req, res) => {
+  const username = req.body.username;
+  res.cookie("username", username);
+  res.redirect("/urls");
+})
+
+// POST /logout
+app.post('/logout', (req, res) => {
+  res.clearCookie("username");
+  res.redirect("/urls");
+})
+
 // GET /register
 app.get("/register", (req, res) => {
   const templateVars = { username: req.cookies["username"] };
   res.render("urls_register", templateVars);
+})
+
+// POST /register
+app.post("/register", (req, res) => {
+  const id = generateRandomString();
+  const email = req.body.email;
+  const password = req.body.password;
+  users[id] = { id, email, password };
+  res.cookie("user_id", id);
+  res.redirect("/urls");
 })
 
 // Start server
