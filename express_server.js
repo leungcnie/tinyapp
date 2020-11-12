@@ -49,9 +49,12 @@ app.post("/urls", (req, res) => {
 app.get("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
   const longURL = urlDatabase[shortURL].longURL;
-  const userId = req.cookies["user_id"] || false;
+  const userId = req.cookies["user_id"] || null;
   if (!userId) {
     return res.render("urls_show", { shortURL: null, longURL: null, user: null });
+  }
+  if (urlDatabase[shortURL].userID !== userId) {
+    return res.status(403).send("You cannot view this URL");
   }
   const user = users[userId];
   const templateVars = { shortURL, longURL, user };
@@ -79,7 +82,10 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 // Redirect to urls_show when Edit button pressed
 app.post("/urls/:shortURL/edit", (req, res) => {
   const shortURL = req.params.shortURL;
-  const userID = req.cookies["user_id"]
+  const userID = req.cookies["user_id"] || null;
+  if (urlDatabase[shortURL].userID !== userID) {
+    return res.status(403).send("You cannot edit this URL");
+  }
   res.redirect(`/urls/${shortURL}`);
 })
 
