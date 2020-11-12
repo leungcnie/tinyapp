@@ -6,7 +6,8 @@
 
 const urlDatabase = {
   b6UTxQ: { longURL: "https://www.tsn.ca", userID: "aJ48lW" },
-  i3BoGr: { longURL: "https://www.google.ca", userID: "aJ48lW" }
+  i3BoGr: { longURL: "https://www.google.ca", userID: "aJ48lW" },
+  sd76Ds: { longURL: "http://example.com", userID: "1"}
 };
 
 const users = { 
@@ -55,9 +56,21 @@ function lookupEmail(email) {
   return false;
 }
 
+// Filter urlDatabase using id
+function urlsForUser(id) {
+  let newDatabase = {}
+  for (const key of Object.keys(urlDatabase)) {
+    if (urlDatabase[key].userID === id) {
+      newDatabase[key] = urlDatabase[key];
+    }
+  }
+  return newDatabase;
+}
+
 module.exports = {
   urlDatabase,
   users,
   generateRandomString,
-  lookupEmail
+  lookupEmail,
+  urlsForUser,
 };
