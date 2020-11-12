@@ -74,9 +74,10 @@ app.post("/urls/:shortURL/edit", (req, res) => {
 // Edit URL resource: update with new longURL
 app.post("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
-  const newLongURL = req.body.longURL; // req.body => {longURL: URL}
+  const longURL = req.body.longURL; // req.body => {longURL: URL}
+  const userID = req.cookies["user_id"];
   console.log(`${urlDatabase[shortURL]} updated to ${newLongURL}`);
-  urlDatabase[shortURL] = newLongURL;
+  urlDatabase[shortURL] = { longURL, userID };
   res.redirect("/urls");
 })
 
