@@ -67,7 +67,11 @@ app.get("/u/:shortURL", (req, res) => {
 // Remove URL resource
 app.post("/urls/:shortURL/delete", (req, res) => {
   const shortURL = req.params.shortURL;
-  console.log(`${urlDatabase[shortURL]} deleted`);
+  const userID = req.cookies["user_id"] || null;
+  if (urlDatabase[shortURL].userID !== userID) {
+    return res.status(403).send("You cannot delete this URL");
+  }
+  console.log(`${urlDatabase[shortURL].longURL} deleted`);
   delete urlDatabase[shortURL];
   res.redirect("/urls");
 })
@@ -75,6 +79,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 // Redirect to urls_show when Edit button pressed
 app.post("/urls/:shortURL/edit", (req, res) => {
   const shortURL = req.params.shortURL;
+  const userID = req.cookies["user_id"]
   res.redirect(`/urls/${shortURL}`);
 })
 
