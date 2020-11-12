@@ -9,10 +9,10 @@ app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// ROUTES ----------------------------------------------------------
+// ROUTES
 
 app.get("/urls", (req, res) => {
-  const userId = req.cookies["user_id"] || false;
+  const userId = req.cookies["user_id"] || null;
   if (!userId) {
     return res.render("urls_index", {urls: null, user: null});
   }
@@ -25,9 +25,9 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 })
 
-// Submit new URL to database
+// Add new URL to database
 app.get("/urls/new", (req, res) => {
-  const userId = req.cookies["user_id"] || false;
+  const userId = req.cookies["user_id"] || null;
   if (!userId) {
     return res.redirect("/login");
   }
@@ -61,13 +61,14 @@ app.get("/urls/:shortURL", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
+// Click on short URL -> redirected to long URL
 app.get("/u/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
   const longURL = urlDatabase[shortURL].longURL;
   res.redirect(longURL);
 });
 
-// Remove URL resource
+// Delete URL resource
 app.post("/urls/:shortURL/delete", (req, res) => {
   const shortURL = req.params.shortURL;
   const userID = req.cookies["user_id"] || null;
@@ -79,7 +80,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   res.redirect("/urls");
 })
 
-// Redirect to urls_show when Edit button pressed
+// Redirect to urls_show for editing 
 app.post("/urls/:shortURL/edit", (req, res) => {
   const shortURL = req.params.shortURL;
   const userID = req.cookies["user_id"] || null;
@@ -89,17 +90,27 @@ app.post("/urls/:shortURL/edit", (req, res) => {
   res.redirect(`/urls/${shortURL}`);
 })
 
-// Edit URL resource: update with new longURL
+// Edit long URL to new one
 app.post("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
   const longURL = req.body.longURL; // req.body => {longURL: URL}
-  const userID = req.cookies["user_id"];
-  console.log(`${urlDatabase[shortURL]} updated to ${newLongURL}`);
+  const userID = req.cookies["user_id"] || null;
+  if (urlDatabase[shortURL].userID !== userID) {
+    return res.status(403).send("You cannot edit this URL");
+  }
+  console.log(`${urlDatabase[shortURL].longURL} updated to ${longURL}`);
   urlDatabase[shortURL] = { longURL, userID };
   res.redirect("/urls");
 })
 
-// POST /login
+// Login
+app.get("/login", (req, res) => {
+  const userId = req.cookies["user_id"];
+  const user = users[userId];
+  const templateVars = { user };
+  res.render("login", templateVars);
+})
+
 app.post('/login', (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
@@ -108,12 +119,9 @@ app.post('/login', (req, res) => {
   if (!email || !password) {
     return res.status(400).send("Cannot have empty email and password fields")
   }
-
   if (!userKey) {
     return res.status(403).send("Account not found");
   }
-  
-  // console.log("lookup email value:", lookupEmail(email));
   if (users[userKey].password !== password) {
     return res.status(403).send("Password incorrect")
   }
@@ -122,13 +130,13 @@ app.post('/login', (req, res) => {
   res.redirect("/urls");
 })
 
-// POST /logout
+// Logout
 app.post('/logout', (req, res) => {
   res.clearCookie("user_id");
   res.redirect("/urls");
 })
 
-// GET /register
+// Register
 app.get("/register", (req, res) => {
   const userId = req.cookies["user_id"];
   const user = users[userId];
@@ -136,7 +144,6 @@ app.get("/register", (req, res) => {
   res.render("register", templateVars);
 })
 
-// POST /register
 app.post("/register", (req, res) => {
   const id = generateRandomString();
   const email = req.body.email;
@@ -145,7 +152,6 @@ app.post("/register", (req, res) => {
   if (!email || !password) {
     return res.status(400).send("Cannot have empty email and password fields")
   }
-
   if (lookupEmail(email)) {
     return res.status(400).send("Email already registered")
   }
@@ -156,15 +162,8 @@ app.post("/register", (req, res) => {
   res.redirect("/urls");
 })
 
-// GET /login
-app.get("/login", (req, res) => {
-  const userId = req.cookies["user_id"];
-  const user = users[userId];
-  const templateVars = { user };
-  res.render("login", templateVars);
-})
 
-// Start server
+// START SERVER
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
