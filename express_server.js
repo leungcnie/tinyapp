@@ -23,7 +23,10 @@ app.get("/urls", (req, res) => {
 
 // Submit new URL to database
 app.get("/urls/new", (req, res) => {
-  const userId = req.cookies["user_id"];
+  const userId = req.cookies["user_id"] || false;
+  if (!userId) {
+    return res.redirect("/login");
+  }
   const user = users[userId];
   const templateVars = { user };
   res.render("urls_new", templateVars);
@@ -89,7 +92,7 @@ app.post('/login', (req, res) => {
     return res.status(403).send("Account not found");
   }
   
-  console.log("lookup email value:", lookupEmail(email));
+  // console.log("lookup email value:", lookupEmail(email));
   if (users[userKey].password !== password) {
     return res.status(403).send("Password incorrect")
   }
@@ -128,7 +131,7 @@ app.post("/register", (req, res) => {
 
   users[id] = { id, email, password };
   res.cookie("user_id", id);
-  console.log("USERS", users);
+  // console.log("USERS", users);
   res.redirect("/urls");
 })
 
