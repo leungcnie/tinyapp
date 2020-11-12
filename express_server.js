@@ -112,14 +112,14 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 })
 
 // Redirect to urls_show for editing 
-app.post("/urls/:shortURL/edit", (req, res) => {
-  const shortURL = req.params.shortURL;
-  const userID = req.session.user_id || null;
-  if (urlDatabase[shortURL].userID !== userID) {
-    return res.status(403).send("You cannot edit this URL");
-  }
-  res.redirect(`/urls/${shortURL}`);
-})
+// app.post("/urls/:shortURL/edit", (req, res) => {
+//   const shortURL = req.params.shortURL;
+//   const userID = req.session.user_id || null;
+//   if (urlDatabase[shortURL].userID !== userID) {
+//     return res.status(403).send("You cannot edit this URL");
+//   }
+//   res.redirect(`/urls/${shortURL}`);
+// })
 
 // Edit long URL to new one
 app.post("/urls/:shortURL", (req, res) => {
