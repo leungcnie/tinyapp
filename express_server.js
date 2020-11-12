@@ -123,7 +123,7 @@ app.post('/login', (req, res) => {
   if (!userKey) {
     return res.status(403).send("Account not found");
   }
-  if (users[userKey].password !== password) {
+  if (!bcrypt.compareSync(password, users[userKey].password)) {
     return res.status(403).send("Password incorrect")
   }
   
