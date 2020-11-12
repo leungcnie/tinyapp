@@ -39,10 +39,10 @@ function generateRandomString() {
 }
 
 // Lookup e-mail in users object and return user ID
-function lookupEmail(email) {
-  for (const userKey of Object.keys(users)) {
-    if (users[userKey].email === email) {
-      return userKey;
+function getUserByEmail(email, database) {
+  for (const user of Object.keys(database)) {
+    if (users[user].email === email) {
+      return user;
     }
   }
   return null;
@@ -63,6 +63,6 @@ module.exports = {
   urlDatabase,
   users,
   generateRandomString,
-  lookupEmail,
+  getUserByEmail,
   urlsForUser,
 };

@@ -5,7 +5,7 @@ const bodyParser = require("body-parser");
 // const cookieParser = require("cookie-parser");
 const cookieSession = require('cookie-session');
 const bcrypt = require('bcrypt');
-const { urlDatabase, users, generateRandomString, lookupEmail, urlsForUser } = require('./data_helpers');
+const { urlDatabase, users, generateRandomString, getUserByEmail, urlsForUser } = require('./data_helpers');
 
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -120,19 +120,19 @@ app.get("/login", (req, res) => {
 app.post('/login', (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
-  const userKey = lookupEmail(email) || false;
+  const user = getUserByEmail(email, users);
 
   if (!email || !password) {
     return res.status(400).send("Cannot have empty email and password fields")
   }
-  if (!userKey) {
+  if (!user) {
     return res.status(403).send("Account not found");
   }
-  if (!bcrypt.compareSync(password, users[userKey].password)) {
+  if (!bcrypt.compareSync(password, users[user].password)) {
     return res.status(403).send("Password incorrect")
   }
   
-  req.session.user_id = userKey;
+  req.session.user_id = user;
   res.redirect("/urls");
 })
 
@@ -160,7 +160,7 @@ app.post("/register", (req, res) => {
   if (!email || !password) {
     return res.status(400).send("Cannot have empty email and password fields")
   }
-  if (lookupEmail(email)) {
+  if (getUserByEmail(email, users)) {
     return res.status(400).send("Email already registered")
   }
 
