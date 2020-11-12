@@ -19,7 +19,12 @@ const users = {
     id: "user2RandomID", 
     email: "user2@example.com", 
     password: "dishwasher-funk"
-  }
+  },
+  "1": {
+    id: "1",
+    email: "a@a.com",
+    password: "123"
+  },
 }
 
 // HELPER FUNCTIONS -------------------------------------------
