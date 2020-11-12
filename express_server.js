@@ -33,9 +33,11 @@ app.get("/urls/new", (req, res) => {
 })
 
 app.post("/urls", (req, res) => {
-  let shortURL = generateRandomString();
-  urlDatabase[shortURL] = req.body.longURL;
-  console.log(`New TinyURL ${shortURL} created for ${req.body.longURL}`);
+  const shortURL = generateRandomString();
+  const longURL = req.body.longURL;
+  const userID = req.cookies["user_id"];
+  urlDatabase[shortURL] = { longURL, userID };
+  console.log(`New TinyURL ${shortURL} created for ${longURL}`);
   res.redirect(`/urls/${shortURL}`);
 });
 
