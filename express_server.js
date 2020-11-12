@@ -16,24 +16,31 @@ app.use(cookieSession({
 // DATA
 
 const urlDatabase = {
-  b6UTxQ: { longURL: "https://www.tsn.ca", userID: "aJ48lW" },
-  i3BoGr: { longURL: "https://www.google.ca", userID: "aJ48lW" }
+  test01: { longURL: "https://www.tsn.ca", userID: "rand01" },
+  test02: { longURL: "https://www.google.ca", userID: "rand02" },
 };
 
 const users = { 
-  "userRandomID": {
-    id: "userRandomID", 
-    email: "user@example.com", 
-    password: bcrypt.hashSync("purple-monkey-dinosaur", 10)
+  "rand01": {
+    id: "rand01", 
+    email: "a@a.com", 
+    password: bcrypt.hashSync("123", 10)
   },
- "user2RandomID": {
-    id: "user2RandomID", 
-    email: "user2@example.com", 
-    password: bcrypt.hashSync("dishwasher-funk", 10)
-  }
+ "rand02": {
+    id: "rand02", 
+    email: "b@b.com", 
+    password: bcrypt.hashSync("234", 10)
+  },
 }
 
 // ROUTES
+app.get("/", (req, res) => {
+  const userID = req.session.user_id || null;
+  if (userID) {
+    return res.redirect("/urls")
+  }
+  res.redirect("/login");
+})
 
 app.get("/urls", (req, res) => {
   const userId = req.session.user_id || null;
