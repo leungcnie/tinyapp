@@ -3,6 +3,7 @@ const app = express();
 const PORT = 8080;
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
+const bcrypt = require('bcrypt');
 const { urlDatabase, users, generateRandomString, lookupEmail, urlsForUser } = require('./data_helpers');
 
 app.set("view engine", "ejs");
@@ -147,7 +148,9 @@ app.get("/register", (req, res) => {
 app.post("/register", (req, res) => {
   const id = generateRandomString();
   const email = req.body.email;
-  const password = req.body.password;
+  const plainPassword = req.body.password;
+  const password = bcrypt.hashSync(plainPassword, 10); // Hashed password
+  console.log(password);
 
   if (!email || !password) {
     return res.status(400).send("Cannot have empty email and password fields")
