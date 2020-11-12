@@ -2,18 +2,36 @@ const express = require("express");
 const app = express();
 const PORT = 8080;
 const bodyParser = require("body-parser");
-// const cookieParser = require("cookie-parser");
 const cookieSession = require('cookie-session');
 const bcrypt = require('bcrypt');
-const { urlDatabase, users, generateRandomString, getUserByEmail, urlsForUser } = require('./data_helpers');
+const { getUserByEmail } = require('./helpers');
 
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({ extended: true }));
-// app.use(cookieParser());
 app.use(cookieSession({
   name: 'session',
   keys: ["ajsdhjaksdh", "ad8fgu88isjuu"]
 }));
+
+// DATA
+
+const urlDatabase = {
+  b6UTxQ: { longURL: "https://www.tsn.ca", userID: "aJ48lW" },
+  i3BoGr: { longURL: "https://www.google.ca", userID: "aJ48lW" }
+};
+
+const users = { 
+  "userRandomID": {
+    id: "userRandomID", 
+    email: "user@example.com", 
+    password: bcrypt.hashSync("purple-monkey-dinosaur", 10)
+  },
+ "user2RandomID": {
+    id: "user2RandomID", 
+    email: "user2@example.com", 
+    password: bcrypt.hashSync("dishwasher-funk", 10)
+  }
+}
 
 // ROUTES
 
@@ -177,3 +195,32 @@ app.post("/register", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
+
+// HELPER FUNCTIONS 
+
+// Generate random string for shortURL
+function generateRandomString() {
+  let output = "";
+  for (i = 0; i < 6; i++) {
+    let randomNum = Math.floor((Math.random() * 61) + 0); // 62 alphanumeric characters
+    if (randomNum <= 9) { // directly map numbers
+      output += randomNum;
+    } else if (randomNum > 9 && randomNum <= 35) { // calculate ASCII uppercase letters
+      output += String.fromCharCode(randomNum - 10 + 65);
+    } else if (randomNum > 35) { // calculate ASCII lowercase letters
+      output += String.fromCharCode(randomNum - 36 + 97);
+    }
+  }
+  return output;
+}
+
+// Filter urlDatabase using id and return new database
+function urlsForUser(id) {
+  let newDatabase = {}
+  for (const key of Object.keys(urlDatabase)) {
+    if (urlDatabase[key].userID === id) {
+      newDatabase[key] = urlDatabase[key];
+    }
+  }
+  return newDatabase;
+}
