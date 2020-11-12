@@ -49,7 +49,10 @@ app.post("/urls", (req, res) => {
 app.get("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
   const longURL = urlDatabase[shortURL].longURL;
-  const userId = req.cookies["user_id"];
+  const userId = req.cookies["user_id"] || false;
+  if (!userId) {
+    return res.render("urls_show", { shortURL: null, longURL: null, user: null });
+  }
   const user = users[userId];
   const templateVars = { shortURL, longURL, user };
   res.render("urls_show", templateVars);
