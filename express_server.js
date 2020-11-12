@@ -3,7 +3,7 @@ const app = express();
 const PORT = 8080;
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
-const { urlDatabase, users, generateRandomString, lookupEmail } = require('./data_helpers');
+const { urlDatabase, users, generateRandomString, lookupEmail, urlsForUser } = require('./data_helpers');
 
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -12,10 +12,14 @@ app.use(cookieParser());
 // ROUTES ----------------------------------------------------------
 
 app.get("/urls", (req, res) => {
-  const userId = req.cookies["user_id"];
+  const userId = req.cookies["user_id"] || false;
+  if (!userId) {
+    return res.render("urls_index", {urls: null, user: null});
+  }
   const user = users[userId];
+  const filteredDatabase = urlsForUser(userId);
   const templateVars = {
-    urls: urlDatabase,
+    urls: filteredDatabase,
     user,
   };
   res.render("urls_index", templateVars);
