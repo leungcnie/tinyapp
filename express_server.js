@@ -20,27 +20,27 @@ const urlDatabase = {
   test02: { longURL: "https://www.google.ca", userID: "rand02" },
 };
 
-const users = { 
+const users = {
   "rand01": {
-    id: "rand01", 
-    email: "a@a.com", 
+    id: "rand01",
+    email: "a@a.com",
     password: bcrypt.hashSync("123", 10)
   },
- "rand02": {
-    id: "rand02", 
-    email: "b@b.com", 
+  "rand02": {
+    id: "rand02",
+    email: "b@b.com",
     password: bcrypt.hashSync("234", 10)
   },
-}
+};
 
 // ROUTES
 app.get("/", (req, res) => {
   const userID = req.session.user_id;
   if (userID) {
-    return res.redirect("/urls")
+    return res.redirect("/urls");
   }
   res.redirect("/login");
-})
+});
 
 app.get("/urls", (req, res) => {
   const userID = req.session.user_id;
@@ -54,7 +54,7 @@ app.get("/urls", (req, res) => {
     user,
   };
   res.render("urls_index", templateVars);
-})
+});
 
 // Add new URL to database
 app.get("/urls/new", (req, res) => {
@@ -65,7 +65,7 @@ app.get("/urls/new", (req, res) => {
   const user = users[userID];
   const templateVars = { user };
   res.render("urls_new", templateVars);
-})
+});
 
 app.post("/urls", (req, res) => {
   const shortURL = generateRandomString();
@@ -118,12 +118,12 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   console.log(`${urlDatabase[shortURL].longURL} for user ${userID} deleted`);
   delete urlDatabase[shortURL];
   res.redirect("/urls");
-})
+});
 
 // Edit long URL to new one
 app.post("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
-  const longURL = req.body.longURL; 
+  const longURL = req.body.longURL;
   const userID = req.session.user_id;
   if (urlDatabase[shortURL].userID !== userID) {
     return res.status(403).send("You cannot edit this URL");
@@ -131,7 +131,7 @@ app.post("/urls/:shortURL", (req, res) => {
   console.log(`${urlDatabase[shortURL].longURL} updated to ${longURL}`);
   urlDatabase[shortURL] = { longURL, userID };
   res.redirect("/urls");
-})
+});
 
 // Login
 app.get("/login", (req, res) => {
@@ -142,7 +142,7 @@ app.get("/login", (req, res) => {
   const user = users[userID];
   const templateVars = { user };
   res.render("login", templateVars);
-})
+});
 
 app.post('/login', (req, res) => {
   const email = req.body.email;
@@ -150,25 +150,25 @@ app.post('/login', (req, res) => {
   const user = getUserByEmail(email, users);
 
   if (!email || !password) {
-    return res.status(400).send("Cannot have empty email and password fields")
+    return res.status(400).send("Cannot have empty email and password fields");
   }
   if (!user) {
     return res.status(403).send("Account not found");
   }
   if (!bcrypt.compareSync(password, users[user].password)) {
-    return res.status(403).send("Password incorrect")
+    return res.status(403).send("Password incorrect");
   }
   
   req.session.user_id = user;
   console.log("req.session", req.session);
   res.redirect("/urls");
-})
+});
 
 // Logout
 app.post('/logout', (req, res) => {
   req.session = null;
   res.redirect("/urls");
-})
+});
 
 // Register
 app.get("/register", (req, res) => {
@@ -179,7 +179,7 @@ app.get("/register", (req, res) => {
   const user = users[userID];
   const templateVars = { user };
   res.render("register", templateVars);
-})
+});
 
 app.post("/register", (req, res) => {
   const id = generateRandomString();
@@ -187,15 +187,15 @@ app.post("/register", (req, res) => {
   const plainPassword = req.body.password;
   const password = bcrypt.hashSync(plainPassword, 10); // Hashed password
   if (!email || !password) {
-    return res.status(400).send("Cannot have empty email and password fields")
+    return res.status(400).send("Cannot have empty email and password fields");
   }
   if (getUserByEmail(email, users)) {
-    return res.status(400).send("Email already registered")
+    return res.status(400).send("Email already registered");
   }
   users[id] = { id, email, password };
   req.session.user_id = id;
   res.redirect("/urls");
-})
+});
 
 
 // START SERVER
@@ -203,10 +203,10 @@ app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
 
-// HELPER FUNCTIONS 
+// HELPER FUNCTIONS
 
 // Generate random string for shortURL
-function generateRandomString() {
+const generateRandomString = () => {
   let output = "";
   for (let i = 0; i < 6; i++) {
     let randomNum = Math.floor((Math.random() * 61) + 0); // 62 alphanumeric characters
@@ -219,15 +219,15 @@ function generateRandomString() {
     }
   }
   return output;
-}
+};
 
 // Filter urlDatabase using id and return new database
-function urlsForUser(id) {
-  let newDatabase = {}
+const urlsForUser = (id) => {
+  let newDatabase = {};
   for (const key of Object.keys(urlDatabase)) {
     if (urlDatabase[key].userID === id) {
       newDatabase[key] = urlDatabase[key];
     }
   }
   return newDatabase;
-}
+};
