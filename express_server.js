@@ -79,6 +79,9 @@ app.post("/urls", (req, res) => {
 // Displays urls_show page
 app.get("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
+  if (!urlDatabase[shortURL]) {
+    return res.status(404).send("That URL does not exist");
+  }
   const longURL = urlDatabase[shortURL].longURL;
   const userId = req.session.user_id || null;
   if (urlDatabase[shortURL].userID !== userId) {
