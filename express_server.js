@@ -35,7 +35,7 @@ const users = {
 
 // ROUTES
 app.get("/", (req, res) => {
-  const userID = req.session.user_id || null;
+  const userID = req.session.user_id;
   if (userID) {
     return res.redirect("/urls")
   }
@@ -43,7 +43,7 @@ app.get("/", (req, res) => {
 })
 
 app.get("/urls", (req, res) => {
-  const userId = req.session.user_id || null;
+  const userId = req.session.user_id;
   if (!userId) {
     return res.render("urls_index", {urls: null, user: null});
   }
@@ -58,7 +58,7 @@ app.get("/urls", (req, res) => {
 
 // Add new URL to database
 app.get("/urls/new", (req, res) => {
-  const userId = req.session.user_id || null;
+  const userId = req.session.user_id;
   if (!userId) {
     return res.redirect("/login");
   }
@@ -70,7 +70,7 @@ app.get("/urls/new", (req, res) => {
 app.post("/urls", (req, res) => {
   const shortURL = generateRandomString();
   const longURL = req.body.longURL;
-  const userID = req.session.user_id || null;
+  const userID = req.session.user_id;
   if (!userID) {
     return res.status(400).send("You must be logged in to create new URL");
   }
@@ -86,7 +86,7 @@ app.get("/urls/:shortURL", (req, res) => {
     return res.status(404).send("That URL does not exist");
   }
   const longURL = urlDatabase[shortURL].longURL;
-  const userId = req.session.user_id || null;
+  const userId = req.session.user_id;
   if (urlDatabase[shortURL].userID !== userId) {
     return res.status(403).send("You cannot view this URL");
   }
@@ -111,7 +111,7 @@ app.get("/u/:shortURL", (req, res) => {
 // Delete URL resource
 app.post("/urls/:shortURL/delete", (req, res) => {
   const shortURL = req.params.shortURL;
-  const userID = req.session.user_id || null;
+  const userID = req.session.user_id;
   if (urlDatabase[shortURL].userID !== userID) {
     return res.status(403).send("You cannot delete this URL");
   }
@@ -134,7 +134,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 app.post("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
   const longURL = req.body.longURL; // req.body => {longURL: URL}
-  const userID = req.session.user_id || null;
+  const userID = req.session.user_id;
   if (urlDatabase[shortURL].userID !== userID) {
     return res.status(403).send("You cannot edit this URL");
   }
@@ -170,6 +170,7 @@ app.post('/login', (req, res) => {
   }
   
   req.session.user_id = user;
+  console.log("req.session", req.session);
   res.redirect("/urls");
 })
 
@@ -206,8 +207,9 @@ app.post("/register", (req, res) => {
 
   users[id] = { id, email, password };
   req.session.user_id = id;
-  console.log("req.session", req.session);
-  console.log("req.session.user_id", req.session.user_id);
+  console.log("cookie", req.session);
+  console.log("new user:", users[id]);
+  console.log("password", password);
   // console.log("USERS", users);
   res.redirect("/urls");
 })
