@@ -43,12 +43,12 @@ app.get("/", (req, res) => {
 })
 
 app.get("/urls", (req, res) => {
-  const userId = req.session.user_id;
-  if (!userId) {
+  const userID = req.session.user_id;
+  if (!userID) {
     return res.render("urls_index", {urls: null, user: null});
   }
-  const user = users[userId];
-  const filteredDatabase = urlsForUser(userId);
+  const user = users[userID];
+  const filteredDatabase = urlsForUser(userID);
   const templateVars = {
     urls: filteredDatabase,
     user,
@@ -58,11 +58,11 @@ app.get("/urls", (req, res) => {
 
 // Add new URL to database
 app.get("/urls/new", (req, res) => {
-  const userId = req.session.user_id;
-  if (!userId) {
+  const userID = req.session.user_id;
+  if (!userID) {
     return res.redirect("/login");
   }
-  const user = users[userId];
+  const user = users[userID];
   const templateVars = { user };
   res.render("urls_new", templateVars);
 })
@@ -86,14 +86,14 @@ app.get("/urls/:shortURL", (req, res) => {
     return res.status(404).send("That URL does not exist");
   }
   const longURL = urlDatabase[shortURL].longURL;
-  const userId = req.session.user_id;
-  if (urlDatabase[shortURL].userID !== userId) {
+  const userID = req.session.user_id;
+  if (urlDatabase[shortURL].userID !== userID) {
     return res.status(403).send("You cannot view this URL");
   }
-  if (!userId) {
+  if (!userID) {
     return res.render("urls_show", { shortURL: null, longURL: null, user: null });
   }
-  const user = users[userId];
+  const user = users[userID];
   const templateVars = { shortURL, longURL, user };
   res.render("urls_show", templateVars);
 });
@@ -120,20 +120,10 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   res.redirect("/urls");
 })
 
-// Redirect to urls_show for editing 
-// app.post("/urls/:shortURL/edit", (req, res) => {
-//   const shortURL = req.params.shortURL;
-//   const userID = req.session.user_id || null;
-//   if (urlDatabase[shortURL].userID !== userID) {
-//     return res.status(403).send("You cannot edit this URL");
-//   }
-//   res.redirect(`/urls/${shortURL}`);
-// })
-
 // Edit long URL to new one
 app.post("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
-  const longURL = req.body.longURL; // req.body => {longURL: URL}
+  const longURL = req.body.longURL; 
   const userID = req.session.user_id;
   if (urlDatabase[shortURL].userID !== userID) {
     return res.status(403).send("You cannot edit this URL");
@@ -196,21 +186,14 @@ app.post("/register", (req, res) => {
   const email = req.body.email;
   const plainPassword = req.body.password;
   const password = bcrypt.hashSync(plainPassword, 10); // Hashed password
-  // console.log(password);
-
   if (!email || !password) {
     return res.status(400).send("Cannot have empty email and password fields")
   }
   if (getUserByEmail(email, users)) {
     return res.status(400).send("Email already registered")
   }
-
   users[id] = { id, email, password };
   req.session.user_id = id;
-  console.log("cookie", req.session);
-  console.log("new user:", users[id]);
-  console.log("password", password);
-  // console.log("USERS", users);
   res.redirect("/urls");
 })
 
@@ -225,7 +208,7 @@ app.listen(PORT, () => {
 // Generate random string for shortURL
 function generateRandomString() {
   let output = "";
-  for (i = 0; i < 6; i++) {
+  for (let i = 0; i < 6; i++) {
     let randomNum = Math.floor((Math.random() * 61) + 0); // 62 alphanumeric characters
     if (randomNum <= 9) { // directly map numbers
       output += randomNum;
