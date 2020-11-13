@@ -75,7 +75,6 @@ app.post("/urls", (req, res) => {
     return res.status(400).send("You must be logged in to create new URL");
   }
   urlDatabase[shortURL] = { longURL, userID };
-  console.log(`New TinyURL ${shortURL} created for ${longURL} for user ${userID}`);
   res.redirect(`/urls/${shortURL}`);
 });
 
@@ -115,7 +114,6 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   if (urlDatabase[shortURL].userID !== userID) {
     return res.status(403).send("You cannot delete this URL");
   }
-  console.log(`${urlDatabase[shortURL].longURL} for user ${userID} deleted`);
   delete urlDatabase[shortURL];
   res.redirect("/urls");
 });
@@ -128,7 +126,6 @@ app.post("/urls/:shortURL", (req, res) => {
   if (urlDatabase[shortURL].userID !== userID) {
     return res.status(403).send("You cannot edit this URL");
   }
-  console.log(`${urlDatabase[shortURL].longURL} updated to ${longURL}`);
   urlDatabase[shortURL] = { longURL, userID };
   res.redirect("/urls");
 });
@@ -160,7 +157,6 @@ app.post('/login', (req, res) => {
   }
   
   req.session.user_id = user;
-  console.log("req.session", req.session);
   res.redirect("/urls");
 });
 
