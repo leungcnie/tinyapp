@@ -70,9 +70,12 @@ app.get("/urls/new", (req, res) => {
 app.post("/urls", (req, res) => {
   const shortURL = generateRandomString();
   const longURL = req.body.longURL;
-  const userID = req.session.user_id;
+  const userID = req.session.user_id || null;
+  if (!userID) {
+    return res.status(400).send("You must be logged in to create new URL");
+  }
   urlDatabase[shortURL] = { longURL, userID };
-  console.log(`New TinyURL ${shortURL} created for ${longURL}`);
+  console.log(`New TinyURL ${shortURL} created for ${longURL} for user ${userID}`);
   res.redirect(`/urls/${shortURL}`);
 });
 
