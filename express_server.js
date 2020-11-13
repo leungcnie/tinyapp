@@ -181,8 +181,11 @@ app.post('/logout', (req, res) => {
 
 // Register
 app.get("/register", (req, res) => {
-  const userId = req.session.user_id;
-  const user = users[userId];
+  const userID = req.session.user_id;
+  if (userID) {
+    return res.redirect("/urls");
+  }
+  const user = users[userID];
   const templateVars = { user };
   res.render("register", templateVars);
 })
