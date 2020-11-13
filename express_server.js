@@ -115,7 +115,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   if (urlDatabase[shortURL].userID !== userID) {
     return res.status(403).send("You cannot delete this URL");
   }
-  console.log(`${urlDatabase[shortURL].longURL} deleted`);
+  console.log(`${urlDatabase[shortURL].longURL} for user ${userID} deleted`);
   delete urlDatabase[shortURL];
   res.redirect("/urls");
 })
@@ -145,8 +145,11 @@ app.post("/urls/:shortURL", (req, res) => {
 
 // Login
 app.get("/login", (req, res) => {
-  const userId = req.session.user_id;
-  const user = users[userId];
+  const userID = req.session.user_id;
+  if (userID) {
+    return res.redirect("/urls");
+  }
+  const user = users[userID];
   const templateVars = { user };
   res.render("login", templateVars);
 })
